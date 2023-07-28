@@ -1,7 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+//import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:sportsapp/Data/Cubits/cubit/player_detail_cubit.dart';
+//import 'package:sportsapp/Data/Cubits/cubit/player_detail_cubit.dart';
 import 'package:sportsapp/Shared/players_row.dart';
 
 class PlayersScreen extends StatelessWidget {
@@ -22,14 +24,15 @@ class PlayersScreen extends StatelessWidget {
                           children: [
                             CircleAvatar(
                               radius: 50,
-                              backgroundImage: NetworkImage(""),
+                              backgroundImage: NetworkImage(
+                                  "https://b.fssta.com/uploads/application/soccer/headshots/885.vresize.350.350.medium.14.png"),
                             ),
                             SizedBox(
                               height: 30,
                             ),
                             PlayersRow(
                               property: "Name",
-                              value: "",
+                              value: " Omar ",
                             ),
                             PlayersRow(
                               property: "Number",
