@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-//import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:sportsapp/screens/players_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:sportsapp/screens/players.dart';
 
-//import 'Data/Cubits/cubit/player_detail_cubit.dart';
+import 'Data/Cubits/cubit/player_detail_cubit.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,22 +15,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return
-        // MultiBlocProvider(
-        //   providers: [
-        //     BlocProvider(
-        //       create: (context) => PlayerDetailCubit(),
-        //     ),
-        //   ],
-        //   child:
-
-        MaterialApp(
-      debugShowCheckedModeBanner: false,
-      // theme: ThemeData(
-      // //  primarySwatch: ,
-      // ),
-      home: Teams(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => PlayerDetailCubit(),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        //  theme: ThemeData(
+        //   primarySwatch:Colors.black ,
+        //  ),
+        home: Teams(),
+      ),
     );
-    // );
   }
 }
