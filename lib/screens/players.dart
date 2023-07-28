@@ -46,9 +46,9 @@ class _TeamsState extends State<Teams> {
                       hintText: 'Search',
                       suffixIcon: InkWell(
                         onTap: () {
-                          //context
-                          //  .read<PlayerDetailCubit>()
-                          // .getAllNews(_searchController.text);
+                          context
+                              .read<PlayerDetailCubit>()
+                              .searchByPlayerName(_searchController.text);
                         },
                         child: Icon(Icons.search),
                       ),
@@ -69,7 +69,7 @@ class _TeamsState extends State<Teams> {
                   return Center(
                     child: CircularProgressIndicator(),
                   );
-                } else if (state is PlayerDetailSucsess) {
+                } else if (state is PlayerDetailSuccess) {
                   return ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
