@@ -1,14 +1,31 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sportsapp/Shared/players_row.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../Data/Cubits/cubit/player_detail_cubit.dart';
+
 // ignore: must_be_immutable
-class Teams extends StatelessWidget {
+class Teams extends StatefulWidget {
   Teams({super.key});
 
+  @override
+  State<Teams> createState() => _TeamsState();
+}
+
+class _TeamsState extends State<Teams> {
   TextEditingController _searchController = TextEditingController();
+
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    if (mounted) {
+      context.read<PlayerDetailCubit>().getPlayers();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,22 +36,19 @@ class Teams extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(
-                top: 45,
-                left: 15,
-                right: 10,
-              ),
+                  top: 45, left: 15, right: 15, bottom: 15),
               child: Row(children: [
                 SizedBox(
-                  width: 350,
+                  width: MediaQuery.of(context).size.width - 30,
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Search',
                       suffixIcon: InkWell(
                         onTap: () {
-                          //  context
-                          //     .read<AllNewsCubit>()
-                          //    .getAllNews(_searchController.text);
+                          //context
+                          //  .read<PlayerDetailCubit>()
+                          // .getAllNews(_searchController.text);
                         },
                         child: Icon(Icons.search),
                       ),
@@ -49,123 +63,182 @@ class Teams extends StatelessWidget {
                 ),
               ]),
             ),
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 20,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  child: Card(
-                    margin: const EdgeInsets.all(10.0),
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundImage: NetworkImage(
-                                'https://images.indianexpress.com/2023/03/ronaldo-portugal.jpg'),
+            BlocBuilder<PlayerDetailCubit, PlayerDetailState>(
+              builder: (context, state) {
+                if (state is PlayerDetailLoading) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is PlayerDetailSucsess) {
+                  return ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: state.ourResponse.result!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return InkWell(
+                        child: Card(
+                          margin: const EdgeInsets.all(10.0),
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
                           ),
-                          RichText(
-                            text: TextSpan(
-                              text: ' Cristiano Ronaldo',
-                              style: TextStyle(
-                                  color: Color(0xFF090A0A),
-                                  fontWeight: FontWeight.bold),
-                              children: const <TextSpan>[
-                                TextSpan(
-                                  text: '\n	 attacker, #7',
-                                  style: TextStyle(
-                                    color: Color(0xFF72777A),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  onTap: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: Column(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
                               children: [
                                 CircleAvatar(
                                   radius: 50,
-                                  backgroundImage: NetworkImage(
-                                      "https://b.fssta.com/uploads/application/soccer/headshots/885.vresize.350.350.medium.14.png"),
+                                  backgroundImage: NetworkImage(state
+                                          .ourResponse
+                                          .result![index]
+                                          .playerImage ??
+                                      ""),
                                 ),
-                                SizedBox(
-                                  height: 30,
-                                ),
-                                PlayersRow(
-                                  property: "Name",
-                                  value: " Omar ",
-                                ),
-                                PlayersRow(
-                                  property: "Number",
-                                  value: "13",
-                                ),
-                                PlayersRow(
-                                  property: "Country",
-                                  value: "Eygpt",
-                                ),
-                                PlayersRow(
-                                  property: "Position",
-                                  value: "Left-back",
-                                ),
-                                PlayersRow(
-                                  property: "Age",
-                                  value: "25",
-                                ),
-                                PlayersRow(
-                                  property: "Yellow Cards Num",
-                                  value: "2",
-                                ),
-                                PlayersRow(
-                                  property: "Red Cards Num",
-                                  value: "1",
-                                ),
-                                PlayersRow(
-                                  property: "Goals",
-                                  value: "7",
-                                ),
-                                PlayersRow(
-                                  property: "Assists",
-                                  value: "4",
+                                RichText(
+                                  text: TextSpan(
+                                    text:
+                                        '       ${state.ourResponse.result![index].playerName ?? ""}\n',
+                                    style: TextStyle(
+                                        color: Color(0xFF090A0A),
+                                        fontWeight: FontWeight.bold),
+                                    children: <TextSpan>[
+                                      TextSpan(
+                                        text:
+                                            '\n       ${state.ourResponse.result![index].playerType ?? ""}',
+                                        style: TextStyle(
+                                          color: Color(0xFF72777A),
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            '   ,  ${state.ourResponse.result![index].playerNumber ?? ""}',
+                                        style: TextStyle(
+                                          color: Color(0xFF72777A),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text(
-                                  "Close",
-                                  style: GoogleFonts.inter(
-                                    color: Color(0xFF04764E),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 50,
+                                          backgroundImage: NetworkImage(state
+                                                  .ourResponse
+                                                  .result![index]
+                                                  .playerImage ??
+                                              ""),
+                                        ),
+                                        SizedBox(
+                                          height: 30,
+                                        ),
+                                        PlayersRow(
+                                          property: "Name",
+                                          value: state.ourResponse
+                                                  .result![index].playerName ??
+                                              "",
+                                        ),
+                                        PlayersRow(
+                                          property: "Number",
+                                          value: state
+                                                  .ourResponse
+                                                  .result![index]
+                                                  .playerNumber ??
+                                              "",
+                                        ),
+                                        PlayersRow(
+                                          property: "Country",
+                                          value: state
+                                                  .ourResponse
+                                                  .result![index]
+                                                  .playerCountry ??
+                                              "",
+                                        ),
+                                        PlayersRow(
+                                          property: "Position",
+                                          value: state.ourResponse
+                                                  .result![index].playerType ??
+                                              "",
+                                        ),
+                                        PlayersRow(
+                                          property: "Age",
+                                          value: state.ourResponse
+                                                  .result![index].playerAge ??
+                                              "",
+                                        ),
+                                        PlayersRow(
+                                          property: "Yellow Cards Num",
+                                          value: state
+                                                  .ourResponse
+                                                  .result![index]
+                                                  .playerYellowCards ??
+                                              "",
+                                        ),
+                                        PlayersRow(
+                                          property: "Red Cards Num",
+                                          value: state
+                                                  .ourResponse
+                                                  .result![index]
+                                                  .playerRedCards ??
+                                              "",
+                                        ),
+                                        PlayersRow(
+                                          property: "Goals",
+                                          value: state.ourResponse
+                                                  .result![index].playerGoals ??
+                                              "",
+                                        ),
+                                        PlayersRow(
+                                          property: "Assists",
+                                          value: state
+                                                  .ourResponse
+                                                  .result![index]
+                                                  .playerAssists ??
+                                              "",
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              )
-                            ],
-                            actionsPadding: EdgeInsets.all(20),
-                            shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(20))),
-                          );
-                        });
-                  },
-                );
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: Text(
+                                        "Close",
+                                        style: GoogleFonts.inter(
+                                          color: Color(0xFF04764E),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                  actionsPadding: EdgeInsets.all(20),
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(20))),
+                                );
+                              });
+                        },
+                      );
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: Text("Error"),
+                  );
+                }
               },
             ),
           ],
